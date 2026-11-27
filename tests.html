@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Practice Tests · The Study Room</title>
+  <meta name="description" content="Timed, full-length practice tests built from your quizzes and flashcards.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <!-- Shares question, score-ring and review styles with the quiz page -->
+  <link rel="stylesheet" href="quizzes.css">
+  <link rel="stylesheet" href="tests.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container nav">
+      <a href="index.html" class="logo">The Study Room</a>
+      <nav aria-label="Main">
+        <ul class="nav-links">
+          <li><a href="flashcards.html">Flashcards</a></li>
+          <li><a href="quizzes.html">Quizzes</a></li>
+          <li><a href="summaries.html">Summaries</a></li>
+          <li><a href="tests.html" aria-current="page">Practice Tests</a></li>
+          <li><a href="podcast.html">Podcast</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ================= SETUP ================= -->
+    <div id="view-setup">
+      <section class="page-head">
+        <div class="container">
+          <h1>Practice Tests</h1>
+          <p class="page-sub">Timed. No hints. No peeking. Walk into the real exam already knowing what it feels like.</p>
+        </div>
+      </section>
+
+      <section class="setup-section">
+        <div class="container setup-stack">
+
+          <div class="notice resume" id="resume" hidden>
+            <div>
+              <p class="resume-title">You have a test in progress</p>
+              <p class="help" id="resume-text"></p>
+            </div>
+            <div class="form-actions">
+              <button type="button" class="btn btn-primary btn-small" id="resume-btn">Resume test</button>
+              <button type="button" class="btn btn-text btn-small" id="discard-btn">Discard</button>
+            </div>
+          </div>
+
+          <div class="setup-grid">
+            <!-- Sources -->
+            <div class="panel">
+              <div class="panel-head">
+                <h2><span class="step">1</span> What's on the test</h2>
+                <button type="button" class="btn btn-text btn-small" id="select-all">Select all</button>
+              </div>
+              <div id="source-groups"></div>
+              <div class="empty-sources" id="no-sources" hidden>
+                <p>There's nothing to test you on yet.</p>
+                <p class="help">Practice tests use your <a href="quizzes.html">quiz questions</a> and <a href="flashcards.html">flashcard decks</a>. Add some there first.</p>
+              </div>
+            </div>
+
+            <!-- Rules -->
+            <div class="panel">
+              <h2><span class="step">2</span> Set the rules</h2>
+
+              <label for="count-select">Number of questions</label>
+              <select id="count-select">
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="30">30</option>
+                <option value="50">50</option>
+                <option value="all">All available</option>
+              </select>
+
+              <label for="time-select">Time limit</label>
+              <select id="time-select">
+                <option value="auto">Auto (90 seconds per question)</option>
+                <option value="none">No time limit</option>
+                <option value="10">10 minutes</option>
+                <option value="15">15 minutes</option>
+                <option value="20">20 minutes</option>
+                <option value="30">30 minutes</option>
+                <option value="45">45 minutes</option>
+                <option value="60">1 hour</option>
+                <option value="90">1 hour 30 minutes</option>
+                <option value="120">2 hours</option>
+                <option value="180">3 hours</option>
+              </select>
+
+              <label for="pass-input">Passing score</label>
+              <div class="pass-row">
+                <input type="number" id="pass-input" min="1" max="100" step="1" inputmode="numeric">
+                <span>%</span>
+              </div>
+
+              <div class="test-summary">
+                <p id="summary-text"></p>
+                <button type="button" class="btn btn-primary" id="start-btn">Start test</button>
+                <p class="help">Once you start, the clock runs even if you leave the page.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- History -->
+          <div class="panel" id="history-panel" hidden>
+            <div class="panel-head">
+              <h2>Past tests</h2>
+              <button type="button" class="btn btn-text btn-small" id="clear-history">Clear history</button>
+            </div>
+            <div class="table-wrap">
+              <table class="history">
+                <thead>
+                  <tr><th scope="col">Date</th><th scope="col">Test</th><th scope="col">Score</th><th scope="col">Result</th><th scope="col">Time</th></tr>
+                </thead>
+                <tbody id="history-body"></tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </section>
+    </div>
+
+    <!-- ================= EXAM ================= -->
+    <section id="view-exam" class="exam" hidden>
+      <div class="exam-bar">
+        <div class="container exam-bar-inner">
+          <div class="exam-title-wrap">
+            <span class="exam-title" id="exam-title"></span>
+            <span class="help" id="exam-answered"></span>
+          </div>
+          <div class="timer" id="timer" role="timer" aria-label="Time remaining">
+            <span class="timer-icon" aria-hidden="true">⏱</span>
+            <span id="timer-text">--:--</span>
+          </div>
+          <div class="exam-bar-actions">
+            <button type="button" class="btn btn-text btn-small" id="exit-btn">Save &amp; exit</button>
+            <button type="button" class="btn btn-primary btn-small" id="submit-btn">Submit test</button>
+          </div>
+        </div>
+      </div>
+      <p class="visually-hidden" id="timer-announce" aria-live="assertive"></p>
+
+      <div class="container exam-grid">
+        <div class="exam-main">
+          <div class="question-card">
+            <div class="exam-q-head">
+              <p class="question-label" id="exam-q-label"></p>
+              <button type="button" class="flag-btn" id="flag-btn" aria-pressed="false">⚑ Flag for review</button>
+            </div>
+            <h2 class="question-text" id="exam-q-text" tabindex="-1"></h2>
+            <div class="options" id="exam-options" role="radiogroup" aria-labelledby="exam-q-text"></div>
+            <div class="short-answer" id="exam-short" hidden>
+              <label for="exam-short-input" class="visually-hidden">Your answer</label>
+              <input type="text" id="exam-short-input" placeholder="Type your answer" autocomplete="off">
+            </div>
+            <div class="exam-nav">
+              <button type="button" class="btn btn-ghost" id="prev-q">← Previous</button>
+              <button type="button" class="btn btn-ghost" id="next-q">Next →</button>
+            </div>
+          </div>
+          <p class="shortcuts"><kbd>1</kbd>–<kbd>4</kbd> answer · <kbd>←</kbd> <kbd>→</kbd> move · <kbd>F</kbd> flag</p>
+        </div>
+
+        <aside class="panel navigator" aria-labelledby="nav-heading">
+          <h3 id="nav-heading">Questions</h3>
+          <div class="nav-grid" id="nav-grid"></div>
+          <ul class="legend">
+            <li><span class="swatch answered"></span> Answered</li>
+            <li><span class="swatch"></span> Not answered</li>
+            <li><span class="swatch flagged"></span> Flagged</li>
+          </ul>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ================= RESULTS ================= -->
+    <section id="view-results" class="run" hidden>
+      <div class="container run-inner">
+        <div class="results-hero">
+          <p class="eyebrow" id="r-title"></p>
+          <p class="timeup" id="r-timeup" hidden>⏱ Time's up. Your test was submitted automatically.</p>
+          <div class="score-ring" id="r-ring"><span id="r-pct">0%</span></div>
+          <p class="verdict" id="r-verdict"></p>
+          <h1 id="r-heading"></h1>
+          <ul class="result-stats" id="r-stats"></ul>
+          <div class="message-actions" id="r-actions"></div>
+        </div>
+
+        <div class="breakdown panel" id="r-breakdown-panel">
+          <h2>By topic</h2>
+          <ul class="breakdown-list" id="r-breakdown"></ul>
+        </div>
+
+        <div class="review">
+          <div class="review-head">
+            <h2>Review your answers</h2>
+            <label class="review-filter">
+              <span class="visually-hidden">Show</span>
+              <select id="r-filter">
+                <option value="all">All questions</option>
+                <option value="missed">Missed only</option>
+                <option value="flagged">Flagged only</option>
+              </select>
+            </label>
+          </div>
+          <ol class="review-list" id="r-review"></ol>
+          <p class="help" id="r-review-empty" hidden>Nothing to show with this filter.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>The Study Room · Built for one very dedicated student.</p>
+      <p><a href="backup.html">Backup &amp; restore</a> · <a href="#">Back to top ↑</a></p>
+    </div>
+  </footer>
+
+  <script src="tests.js"></script>
+  <script src="backup-reminder.js"></script>
+</body>
+</html>
